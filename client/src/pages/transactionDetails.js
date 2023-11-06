@@ -27,7 +27,7 @@ const TransactionDetails = () => {
   };
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://localhost:5000/get_chain");
+      const response = await fetch("http://192.168.1.121:5000/get_chain");
       const result = await response.json();
       if (result)
         setTransaction(
@@ -56,7 +56,7 @@ const TransactionDetails = () => {
       formData.append("transaction_index", transaction_index);
 
       const response = axios
-        .post("http://192.168.1.114:5000/get_decrypted_data", formData)
+        .post("http://192.168.1.121:5000/get_decrypted_data", formData)
         .then(() => {
           fetchData();
         });
