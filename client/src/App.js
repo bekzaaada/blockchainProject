@@ -15,8 +15,8 @@ function App() {
     <Router>
       <div className="main">
         <Routes>
-          <Route path="/register-node" element={<NodeRegistration />} />
-          <Route path="/nodes-dashboard" element={<NodesDashboard />} />
+          <Route path="/register-node" element={[<MainHeader key="mainHeader" />,<NodeRegistration key="registerNode"/>]} />
+          <Route path="/nodes-dashboard" element={[<MainHeader key="mainHeader" />, <NodesDashboard key="nodesDashboard"/>]} />
           <Route
             path="/"
             element={[<MainHeader key="mainHeader" />, <Main key="main" />]}

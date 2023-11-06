@@ -9,7 +9,7 @@ const Generator = () => {
   const [privateKey, setPrivateKey] = useState("");
   function generateKey() {
     const fetchData = async () => {
-      const response = await fetch("http://192.168.1.114:5000/generate_keys");
+      const response = await fetch("http://192.168.1.121:5000/generate_keys");
       const result = await response.json();
       if (result) {
         setPrivateKey(result.private_key);

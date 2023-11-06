@@ -7,7 +7,7 @@ const NodeRegistration = () => {
 
     const registerNode = async () => {
         try {
-            const response = await axios.post('http://192.168.1.115:5000/register_node', { node_address: nodeAddress });
+            const response = await axios.post('http://192.168.1.114:5000/register_node', { node_address: nodeAddress });
             setMessage(response.data.message);
         } catch (error) {
             setMessage('Error registering node.');
@@ -21,6 +21,7 @@ const NodeRegistration = () => {
                 placeholder="Enter node address" 
                 value={nodeAddress}
                 onChange={(e) => setNodeAddress(e.target.value)}
+                className="input"
             />
             <button onClick={registerNode}>Register Node</button>
             {message && <p>{message}</p>}

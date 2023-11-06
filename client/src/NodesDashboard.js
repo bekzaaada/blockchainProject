@@ -7,7 +7,7 @@ const NodesDashboard = () => {
   useEffect(() => {
     const fetchNodes = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:5000/get_nodes");
+        const response = await axios.get("http://192.168.1.121:5000/get_nodes");
         setNodes(response.data.nodes);
       } catch (error) {
         console.error("Error fetching nodes.");
@@ -18,15 +18,15 @@ const NodesDashboard = () => {
   }, []);
 
   return (
-    <div>
+    <div style={{display: "flex", alignItems: "center", flexDirection: 'column', justifyContent: 'center'}}>
       <h2 style={{ margin: 0, padding: 10, color: "#fff" }}>
         Registered Nodes
       </h2>
-      <ul>
+      <ol>
         {nodes.map((node, index) => (
-          <li key={index}>{node}</li>
+          <li key={index} style={{color: '#fff'}}>{node}</li>
         ))}
-      </ul>
+      </ol>
     </div>
   );
 };

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "../assets/main.css";
+
 
 const NodeRegistration = () => {
   const [nodeAddress, setNodeAddress] = useState("");
@@ -18,6 +20,7 @@ const NodeRegistration = () => {
     <div>
       <input
         type="text"
+        className="input"
         placeholder="Enter node address"
         value={nodeAddress}
         onChange={(e) => setNodeAddress(e.target.value)}

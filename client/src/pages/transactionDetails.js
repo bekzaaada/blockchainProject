@@ -46,9 +46,7 @@ const TransactionDetails = () => {
     var file = event.target.files[0];
     var reader = new FileReader();
     reader.onload = function (event) {
-      // The file's text will be printed here
       console.log(event.target.result);
-      // setFile(event.target.result);
       const formData = new FormData();
       formData.append("private_file", event.target.result);
       formData.append("encrypted_data", encrypted_data);
@@ -63,6 +61,51 @@ const TransactionDetails = () => {
     };
     reader.readAsText(file);
   };
+  // const handleFileUpload = (event, index, transaction_index, encrypted_data) => {
+  //   var file = event.target.files[0];
+  //   var reader = new FileReader();
+  //   reader.onload = function (event) {
+  //     const formData = new FormData();
+  //     formData.append("private_file", event.target.result);
+  //     formData.append("encrypted_data", encrypted_data);
+  //     formData.append("index", index);
+  //     formData.append("transaction_index", transaction_index);
+
+  //     axios
+  //       .post("http://192.168.1.121:5000/get_decrypted_data", formData, {
+  //         responseType: "blob", // Set the response type to blob
+  //       })
+  //       .then((response) => {
+  //         // Create a blob object from the response data
+  //         const blob = new Blob([response.data], {
+  //           type: response.headers["content-type"],
+  //         });
+
+  //         // Create a URL for the blob
+  //         const url = window.URL.createObjectURL(blob);
+
+  //         // Create a temporary anchor element to trigger the download
+  //         const a = document.createElement("a");
+  //         a.href = url;
+  //         a.download = "decrypted_data.txt"; // Set the file name
+  //         a.style.display = "none";
+  //         document.body.appendChild(a);
+
+  //         // Trigger a click event on the anchor element to initiate the download
+  //         a.click();
+
+  //         // Remove the anchor element
+  //         document.body.removeChild(a);
+
+  //         // Release the blob object URL
+  //         window.URL.revokeObjectURL(url);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Failed to download decrypted data:", error);
+  //       });
+  //   };
+  //   reader.readAsText(file);
+  // };
 
   return (
     <div className="lists">

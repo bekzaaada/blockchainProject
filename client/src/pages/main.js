@@ -48,6 +48,7 @@ const Main = () => {
         "http://192.168.1.121:5000/add_transaction",
         formData
       );
+      setMessage(response.data.message)
       console.log("Transaction sent:", response.data);
     } catch (error) {
       console.error("Error sending transaction:", error);
