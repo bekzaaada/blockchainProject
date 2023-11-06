@@ -12,6 +12,8 @@ const Main = () => {
   });
 
   const [name, setName] = useState("");
+  const [message, setMessage] = useState("");
+
 
   const handleFileUpload = (event) => {
     var file = event.target.files[0];
@@ -31,10 +33,6 @@ const Main = () => {
     reader.readAsText(file);
   };
 
-  // const handlePrivateKeyUpload = (event) => {
-  //   const uploadedPublicKey = event.target.files[0];
-  //   setPublicKey(uploadedPublicKey);
-  // };
 
   const sendTransaction = async () => {
     const formData = new FormData();
@@ -66,13 +64,7 @@ const Main = () => {
   return (
     <div className="main">
       <div className="main__block1">
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="input"
-          placeholder="Name"
-        />
+        
         <UploadButton
           text={"IMPORT A FILE"}
           action={(e) => handleFileUpload(e)}
@@ -86,10 +78,21 @@ const Main = () => {
           action={(e) => handlePublicKeyUpload(e)}
           id="input-file2"
         />
+        <p></p>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="input"
+          placeholder="Additional info"
+        />
+        <p></p>
         {publicKey.length > 0 && (
           <p className="message">Public key has successfully been uploaded</p>
         )}
-        <Button text={"Send transaction"} onClick={(e) => sendTransaction(e)} />
+        <Button text={"Send transaction"} onClick={(e) => sendTransaction(e)}  />
+        {message && <p className="message">File has successfully added to transaction</p>}
+
         <Button text={"Generate block"} onClick={(e) => generateBlock(e)} />
       </div>
     </div>
