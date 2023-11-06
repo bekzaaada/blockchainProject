@@ -1,7 +1,7 @@
 import datetime
 import hashlib
 import json
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 import requests
 from uuid import uuid4
 from urllib.parse import urlparse
@@ -258,7 +258,37 @@ def is_valid():
         response = {'message': "We have a problem. The Blockchain is not valid."}
     return jsonify(response), 200
 
+# @app.route("/get_decrypted_data", methods=['POST'])
+# def get_decrypted_data():
+#     json = request.form.to_dict(flat=True)
+#     transaction_keys = ['private_file', "encrypted_data", "index", "transaction_index"]
+#     print("Encrypted Data:", json["encrypted_data"])
+    
+#     if not all(key in json for key in transaction_keys):
+#         return "Some elements of the transaction are missing", 400
 
+#     try:
+#         decrypted_text_data = decrypt_text_data(json["encrypted_data"], json["private_file"])
+        
+#         print("Decrypted Data:", decrypted_text_data)
+#         with open("decrypted_data.txt", "w") as file:
+#             file.write(decrypted_text_data)
+        
+#         index = blockchain.update_encrypted_transaction(
+#             decrypted_text_data,
+#             json['index'],
+#             json['transaction_index']
+#         )
+        
+#         response = {
+#             "message": f"This transaction will be added to Block {index}"
+#         }
+#         return send_file("decrypted_data.txt", as_attachment=True, download_name=file)
+
+#     except Exception as e:
+#         print("Decryption Error:", str(e))
+#         return "Decryption failed", 400
+    
 @app.route("/get_decrypted_data", methods=['POST'])
 def get_decrypted_data():
     json = request.form.to_dict(flat=True)
