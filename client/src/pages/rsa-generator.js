@@ -7,9 +7,10 @@ import { useState } from "react";
 const Generator = () => {
   const [publicKey, setPublicKey] = useState("");
   const [privateKey, setPrivateKey] = useState("");
+  
   function generateKey() {
     const fetchData = async () => {
-      const response = await fetch("http://192.168.1.121:5000/generate_keys");
+      const response = await fetch("http://192.168.1.108:5000/generate_keys");
       const result = await response.json();
       if (result) {
         setPrivateKey(result.private_key);
@@ -44,6 +45,7 @@ const Generator = () => {
 
     window.URL.revokeObjectURL(url);
   }
+
   return (
     <div className="generator">
       <div className="generator__button">

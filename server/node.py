@@ -173,6 +173,7 @@ def generate_rsa_keys():
 node_address = str(uuid4()).replace('-', '')
 
 def encrypt_text_data(text_data, recipient_public_key):
+    print(text_data, recipient_public_key)
     try:
         recipient_public_key = serialization.load_pem_public_key(
             recipient_public_key.encode(), backend=default_backend()
@@ -190,6 +191,8 @@ def encrypt_text_data(text_data, recipient_public_key):
         return str(e)
 
 def decrypt_text_data(encrypted_data, private_key):
+    print(encrypted_data)
+    print(private_key)
     try:
         private_key = serialization.load_pem_private_key(
             private_key.encode(), password=None, backend=default_backend()
@@ -257,44 +260,11 @@ def is_valid():
     else:
         response = {'message': "We have a problem. The Blockchain is not valid."}
     return jsonify(response), 200
-
-# @app.route("/get_decrypted_data", methods=['POST'])
-# def get_decrypted_data():
-#     json = request.form.to_dict(flat=True)
-#     transaction_keys = ['private_file', "encrypted_data", "index", "transaction_index"]
-#     print("Encrypted Data:", json["encrypted_data"])
-    
-#     if not all(key in json for key in transaction_keys):
-#         return "Some elements of the transaction are missing", 400
-
-#     try:
-#         decrypted_text_data = decrypt_text_data(json["encrypted_data"], json["private_file"])
-        
-#         print("Decrypted Data:", decrypted_text_data)
-#         with open("decrypted_data.txt", "w") as file:
-#             file.write(decrypted_text_data)
-        
-#         index = blockchain.update_encrypted_transaction(
-#             decrypted_text_data,
-#             json['index'],
-#             json['transaction_index']
-#         )
-        
-#         response = {
-#             "message": f"This transaction will be added to Block {index}"
-#         }
-#         return send_file("decrypted_data.txt", as_attachment=True, download_name=file)
-
-#     except Exception as e:
-#         print("Decryption Error:", str(e))
-#         return "Decryption failed", 400
-    
+##
 @app.route("/get_decrypted_data", methods=['POST'])
 def get_decrypted_data():
     json = request.form.to_dict(flat=True)
-    
     transaction_keys = ['private_file', "encrypted_data", "index", "transaction_index"]
-
     print("Encrypted Data:", json["encrypted_data"])
     
     if not all(key in json for key in transaction_keys):
@@ -304,6 +274,8 @@ def get_decrypted_data():
         decrypted_text_data = decrypt_text_data(json["encrypted_data"], json["private_file"])
         
         print("Decrypted Data:", decrypted_text_data)
+        with open("decrypted_data.txt", "w", encoding='utf-8') as file:
+            file.write(decrypted_text_data)
         
         index = blockchain.update_encrypted_transaction(
             decrypted_text_data,
@@ -314,11 +286,42 @@ def get_decrypted_data():
         response = {
             "message": f"This transaction will be added to Block {index}"
         }
-        return jsonify(response), 201
+        return send_file("decrypted_data.txt", as_attachment=True, download_name="decrypted_data.txt")
 
     except Exception as e:
         print("Decryption Error:", str(e))
         return "Decryption failed", 400
+    ##
+# @app.route("/get_decrypted_data", methods=['POST'])
+# def get_decrypted_data():
+#     json = request.form.to_dict(flat=True)
+    
+#     transaction_keys = ['private_file', "encrypted_data", "index", "transaction_index"]
+
+#     print("Encrypted Data:", json["encrypted_data"])
+    
+#     if not all(key in json for key in transaction_keys):
+#         return "Some elements of the transaction are missing", 400
+
+#     try:
+#         decrypted_text_data = decrypt_text_data(json["encrypted_data"], json["private_file"])
+        
+#         print("Decrypted Data:", decrypted_text_data)
+        
+#         index = blockchain.update_encrypted_transaction(
+#             decrypted_text_data,
+#             json['index'],
+#             json['transaction_index']
+#         )
+        
+#         response = {
+#             "message": f"This transaction will be added to Block {index}"
+#         }
+#         return jsonify(response), 201
+
+#     except Exception as e:
+#         print("Decryption Error:", str(e))
+#         return "Decryption failed", 400
 
 @app.route("/add_transaction", methods=['POST'])
 def add_transactions():
@@ -363,5 +366,5 @@ def get_nodes():
 
     
 
-app.run(host='192.168.1.121', port=5000, debug=True)
+app.run(host='192.168.1.108', port=5000, debug=True)
 

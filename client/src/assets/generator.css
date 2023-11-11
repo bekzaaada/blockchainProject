@@ -1,5 +1,6 @@
 .generator,.blockGenerator {
-    height: 120vh;
+    /* height: 100vh; */
+    background-color: rgb(11, 38, 92);
     color: white;
 }
 .generator_buttons {

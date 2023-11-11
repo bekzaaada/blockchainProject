@@ -18,16 +18,19 @@ const TransactionDetails = () => {
   ]);
 
   const fetchData = async () => {
-    const response = await fetch("http://192.168.1.121:5000/get_chain");
+    const response = await fetch("http://192.168.1.108:5000/get_chain");
     const result = await response.json();
-    if (result)
+    if (result) {
+    const chain = result.chain.filter((item) => item.index === index * 1)[0];
+
       setTransaction(
-        result.chain.filter((item) => item.index === index * 1)[0]
+        chain
       );
+    }
   };
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://192.168.1.121:5000/get_chain");
+      const response = await fetch("http://192.168.1.108:5000/get_chain");
       const result = await response.json();
       if (result)
         setTransaction(
@@ -37,15 +40,17 @@ const TransactionDetails = () => {
     fetchData();
   }, [index]);
 
-  const handleFileUpload = (
+
+
+  const handleFileUpload =  (
     event,
     index,
     transaction_index,
-    encrypted_data
+    encrypted_data,
   ) => {
     var file = event.target.files[0];
     var reader = new FileReader();
-    reader.onload = function (event) {
+    reader.onload = async function  (event) {
       console.log(event.target.result);
       const formData = new FormData();
       formData.append("private_file", event.target.result);
@@ -53,14 +58,31 @@ const TransactionDetails = () => {
       formData.append("index", index);
       formData.append("transaction_index", transaction_index);
 
-      const response = axios
-        .post("http://192.168.1.121:5000/get_decrypted_data", formData)
-        .then(() => {
-          fetchData();
-        });
+      const response = await axios
+        .post("http://192.168.1.108:5000/get_decrypted_data", formData)
+        .then(async (res) => {
+          await fetchData();
+          downloadFile(res.data);
+        })
     };
+
     reader.readAsText(file);
   };
+
+  const downloadFile = (text) => {
+    const blob = new Blob([`${text}\n`],{ type: 'application/octet-stream' });
+    const url = window.URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    console.log( text)
+    a.href = url;
+    a.download = 'decrypted_data.txt';
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+
+  }
+
   // const handleFileUpload = (event, index, transaction_index, encrypted_data) => {
   //   var file = event.target.files[0];
   //   var reader = new FileReader();
@@ -164,8 +186,11 @@ const TransactionDetails = () => {
               </div>
               <UploadButton
                 text={"Decrypt"}
-                action={(e) =>
-                  handleFileUpload(e, transaction.index, i, item.encrypted_file)
+                action={(e) => {
+
+                  handleFileUpload(e, transaction.index, i, item.encrypted_file, item);
+                  console.log(item.encrypted_file)
+                }
                 }
                 id="input-file1"
               ></UploadButton>

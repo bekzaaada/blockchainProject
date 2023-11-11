@@ -45,7 +45,7 @@ const Main = () => {
     formData.append("recipient", "Beks");
     try {
       const response = await axios.post(
-        "http://192.168.1.121:5000/add_transaction",
+        "http://192.168.1.108:5000/add_transaction",
         formData
       );
       setMessage(response.data.message)
@@ -56,7 +56,7 @@ const Main = () => {
   };
   const generateBlock = async () => {
     try {
-      const response = await axios.get("http://192.168.1.121:5000/mine_block");
+      const response = await axios.get("http://192.168.1.108:5000/mine_block");
       console.log("New block generated:", response.data);
     } catch (error) {
       console.error("Error generating block:", error);
@@ -92,9 +92,9 @@ const Main = () => {
           <p className="message">Public key has successfully been uploaded</p>
         )}
         <Button text={"Send transaction"} onClick={(e) => sendTransaction(e)}  />
-        {message && <p className="message">File has successfully added to transaction</p>}
 
         <Button text={"Generate block"} onClick={(e) => generateBlock(e)} />
+        {message && <p className="message">File has successfully added to transaction</p>}
       </div>
     </div>
   );
