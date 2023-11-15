@@ -18,7 +18,7 @@ const TransactionDetails = () => {
   ]);
 
   const fetchData = async () => {
-    const response = await fetch("http://192.168.1.108:5000/get_chain");
+    const response = await fetch("http://192.168.1.111:5000/get_chain");
     const result = await response.json();
     if (result) {
     const chain = result.chain.filter((item) => item.index === index * 1)[0];
@@ -30,7 +30,7 @@ const TransactionDetails = () => {
   };
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://192.168.1.108:5000/get_chain");
+      const response = await fetch("http://192.168.1.111:5000/get_chain");
       const result = await response.json();
       if (result)
         setTransaction(
@@ -59,7 +59,7 @@ const TransactionDetails = () => {
       formData.append("transaction_index", transaction_index);
 
       const response = await axios
-        .post("http://192.168.1.108:5000/get_decrypted_data", formData)
+        .post("http://192.168.1.111:5000/get_decrypted_data", formData)
         .then(async (res) => {
           await fetchData();
           downloadFile(res.data);

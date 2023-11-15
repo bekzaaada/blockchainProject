@@ -8,7 +8,7 @@ const Lists = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://192.168.1.108:5000/get_chain");
+      const response = await fetch("http://192.168.1.111:5000/get_chain");
       const result = await response.json();
       if(result) setBlocks(result.chain);
     }

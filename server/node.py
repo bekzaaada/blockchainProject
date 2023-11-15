@@ -171,24 +171,62 @@ def generate_rsa_keys():
     return private_pem, public_pem
 
 node_address = str(uuid4()).replace('-', '')
-
 def encrypt_text_data(text_data, recipient_public_key):
-    print(text_data, recipient_public_key)
     try:
+        print("Original Text Data:", text_data)
+
         recipient_public_key = serialization.load_pem_public_key(
             recipient_public_key.encode(), backend=default_backend()
         )
-        encrypted_data = recipient_public_key.encrypt(
-            text_data.encode(),
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None,
-            ),
-        )
+        print("Recipient Public Key:", recipient_public_key)
+
+        chunk_size = 100
+        chunks = [text_data[i:i + chunk_size] for i in range(0, len(text_data), chunk_size)]
+
+        encrypted_data_chunks = []
+        for chunk in chunks:
+            encrypted_chunk = recipient_public_key.encrypt(
+                chunk.encode(),
+                padding.OAEP(
+                    mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                    algorithm=hashes.SHA256(),
+                    label=None,
+                ),
+            )
+            encrypted_data_chunks.append(encrypted_chunk)
+
+        encrypted_data = b"".join(encrypted_data_chunks)
+        print("Encrypted Data:", encrypted_data)
+
         return base64.b64encode(encrypted_data).decode('utf-8')
+    except ValueError as ve:
+        print(f"Encryption failed: {ve}")
+        return f"Encryption failed: {ve}"
     except Exception as e:
+        print(f"Encryption failed: {type(e).__name__} - {e}")
         return str(e)
+
+
+# def encrypt_text_data(text_data, recipient_public_key):
+#     # print(text_data, recipient_public_key)
+#     try:
+#         recipient_public_key = serialization.load_pem_public_key(
+#             recipient_public_key.encode(), backend=default_backend()
+#         )
+#         print(recipient_public_key)
+#         encrypted_data = recipient_public_key.encrypt(
+#             text_data.encode(),
+#             padding.OAEP(
+#                 mgf=padding.MGF1(algorithm=hashes.SHA256()),
+#                 algorithm=hashes.SHA256(),
+#                 label=None,
+#             ),
+#         )
+#         print(encrypted_data)
+#         return base64.b64encode(encrypted_data).decode('utf-8')
+#     except Exception as e:
+#         print(e)
+#         return str(e)
 
 def decrypt_text_data(encrypted_data, private_key):
     print(encrypted_data)
@@ -366,5 +404,5 @@ def get_nodes():
 
     
 
-app.run(host='192.168.1.108', port=5000, debug=True)
+app.run(host='192.168.1.111', port=5000, debug=True)
 
