@@ -1,3 +1,4 @@
+
 import datetime
 import hashlib
 import json
@@ -13,7 +14,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
-
+import time 
 
 class Blockchain:
     def __init__(self):
@@ -103,7 +104,6 @@ class Blockchain:
         return True
 
     def add_transactions(self, sender, recipient, amount, public_key, add_info, encrypted_file):
-
         self.transactions.append({
             "sender": sender,
             "amount": amount,
@@ -152,6 +152,7 @@ app = Flask(__name__)
 CORS(app)
 
 def generate_rsa_keys():
+    start_time = time.time()
     private_key = rsa.generate_private_key(
         public_exponent=65537,
         key_size=2048
@@ -168,10 +169,15 @@ def generate_rsa_keys():
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     ).decode('utf-8')
 
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Time spent on public key generation: {elapsed_time} seconds")
+
     return private_pem, public_pem
 
 node_address = str(uuid4()).replace('-', '')
 def encrypt_text_data(text_data, recipient_public_key):
+    start_time = time.time()
     try:
         print("Original Text Data:", text_data)
 
@@ -180,7 +186,7 @@ def encrypt_text_data(text_data, recipient_public_key):
         )
         print("Recipient Public Key:", recipient_public_key)
 
-        chunk_size = 100
+        chunk_size = 140
         chunks = [text_data[i:i + chunk_size] for i in range(0, len(text_data), chunk_size)]
 
         encrypted_data_chunks = []
@@ -196,7 +202,10 @@ def encrypt_text_data(text_data, recipient_public_key):
             encrypted_data_chunks.append(encrypted_chunk)
 
         encrypted_data = b"".join(encrypted_data_chunks)
-        print("Encrypted Data:", encrypted_data)
+        # print("Encrypted Data:", encrypted_data)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Time spent on file encryption: {elapsed_time} seconds")
 
         return base64.b64encode(encrypted_data).decode('utf-8')
     except ValueError as ve:
@@ -207,46 +216,35 @@ def encrypt_text_data(text_data, recipient_public_key):
         return str(e)
 
 
-# def encrypt_text_data(text_data, recipient_public_key):
-#     # print(text_data, recipient_public_key)
-#     try:
-#         recipient_public_key = serialization.load_pem_public_key(
-#             recipient_public_key.encode(), backend=default_backend()
-#         )
-#         print(recipient_public_key)
-#         encrypted_data = recipient_public_key.encrypt(
-#             text_data.encode(),
-#             padding.OAEP(
-#                 mgf=padding.MGF1(algorithm=hashes.SHA256()),
-#                 algorithm=hashes.SHA256(),
-#                 label=None,
-#             ),
-#         )
-#         print(encrypted_data)
-#         return base64.b64encode(encrypted_data).decode('utf-8')
-#     except Exception as e:
-#         print(e)
-#         return str(e)
-
 def decrypt_text_data(encrypted_data, private_key):
-    print(encrypted_data)
-    print(private_key)
+    start_time = time.time()
     try:
         private_key = serialization.load_pem_private_key(
             private_key.encode(), password=None, backend=default_backend()
         )
         encrypted_data = base64.b64decode(encrypted_data)
-        decrypted_data = private_key.decrypt(
-            encrypted_data,
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None,
-            ),
-        )
+
+        decrypted_data_chunks = []
+        chunk_size = 256  
+        for i in range(0, len(encrypted_data), chunk_size):
+            decrypted_chunk = private_key.decrypt(
+                encrypted_data[i:i + chunk_size],
+                padding.OAEP(
+                    mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                    algorithm=hashes.SHA256(),
+                    label=None,
+                ),
+            )
+            decrypted_data_chunks.append(decrypted_chunk)
+
+        decrypted_data = b"".join(decrypted_data_chunks)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Time spent on file decryption: {elapsed_time} seconds")
+
         return decrypted_data.decode('utf-8')
     except Exception as e:
-        print(e);
+        print(e)
         return str(e)
 
 blockchain = Blockchain()
@@ -255,13 +253,18 @@ blockchain = Blockchain()
 
 @app.route("/mine_block", methods=['GET'])
 def mine_block():
+    start_time = time.time()
     previous_block = blockchain.get_previous_block()
     previous_proof = previous_block['proof']
     previous_hash = previous_block["hash"]
     proof = blockchain.proof_of_work(previous_proof)
     miner_address = request.remote_addr + ':' + str(request.environ.get('REMOTE_PORT'))
-
+    start_time = time.time()
     block = blockchain.create_block(proof, previous_hash, miner_address)
+
+    end_time = time.time()  
+    elapsed_time = end_time - start_time  
+    print(f"Time spent on mining block: {elapsed_time} seconds")
 
     response = {
         "message": "Congratulations, you just mined a block!",
@@ -303,7 +306,7 @@ def is_valid():
 def get_decrypted_data():
     json = request.form.to_dict(flat=True)
     transaction_keys = ['private_file', "encrypted_data", "index", "transaction_index"]
-    print("Encrypted Data:", json["encrypted_data"])
+    # print("Encrypted Data:", json["encrypted_data"])
     
     if not all(key in json for key in transaction_keys):
         return "Some elements of the transaction are missing", 400
@@ -311,7 +314,7 @@ def get_decrypted_data():
     try:
         decrypted_text_data = decrypt_text_data(json["encrypted_data"], json["private_file"])
         
-        print("Decrypted Data:", decrypted_text_data)
+        # print("Decrypted Data:", decrypted_text_data)
         with open("decrypted_data.txt", "w", encoding='utf-8') as file:
             file.write(decrypted_text_data)
         
@@ -329,37 +332,7 @@ def get_decrypted_data():
     except Exception as e:
         print("Decryption Error:", str(e))
         return "Decryption failed", 400
-    ##
-# @app.route("/get_decrypted_data", methods=['POST'])
-# def get_decrypted_data():
-#     json = request.form.to_dict(flat=True)
-    
-#     transaction_keys = ['private_file', "encrypted_data", "index", "transaction_index"]
-
-#     print("Encrypted Data:", json["encrypted_data"])
-    
-#     if not all(key in json for key in transaction_keys):
-#         return "Some elements of the transaction are missing", 400
-
-#     try:
-#         decrypted_text_data = decrypt_text_data(json["encrypted_data"], json["private_file"])
-        
-#         print("Decrypted Data:", decrypted_text_data)
-        
-#         index = blockchain.update_encrypted_transaction(
-#             decrypted_text_data,
-#             json['index'],
-#             json['transaction_index']
-#         )
-        
-#         response = {
-#             "message": f"This transaction will be added to Block {index}"
-#         }
-#         return jsonify(response), 201
-
-#     except Exception as e:
-#         print("Decryption Error:", str(e))
-#         return "Decryption failed", 400
+  
 
 @app.route("/add_transaction", methods=['POST'])
 def add_transactions():
@@ -373,7 +346,7 @@ def add_transactions():
 
     if not encrypted_text_data:
         return "Encryption of text data failed", 400
-
+    start_time = time.time()
     index = blockchain.add_transactions(
         json['sender'],
         json["recipient"],
@@ -382,6 +355,10 @@ def add_transactions():
         json["add_info"],  
         encrypted_text_data
     )
+    
+    end_time = time.time()  
+    elapsed_time = end_time - start_time  
+    print(f"Time spent on adding transaction: {elapsed_time} seconds")
     response = {
         "message": f"This transaction will be added to Block {index}"
     }
@@ -404,5 +381,5 @@ def get_nodes():
 
     
 
-app.run(host='192.168.1.111', port=5000, debug=True)
+app.run(host='192.168.1.118', port=5000, debug=True)
 

@@ -18,7 +18,7 @@ const TransactionDetails = () => {
   ]);
 
   const fetchData = async () => {
-    const response = await fetch("http://192.168.1.111:5000/get_chain");
+    const response = await fetch("http://192.168.1.118:5000/get_chain");
     const result = await response.json();
     if (result) {
     const chain = result.chain.filter((item) => item.index === index * 1)[0];
@@ -30,7 +30,7 @@ const TransactionDetails = () => {
   };
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch("http://192.168.1.111:5000/get_chain");
+      const response = await fetch("http://192.168.1.118:5000/get_chain");
       const result = await response.json();
       if (result)
         setTransaction(
@@ -59,7 +59,7 @@ const TransactionDetails = () => {
       formData.append("transaction_index", transaction_index);
 
       const response = await axios
-        .post("http://192.168.1.111:5000/get_decrypted_data", formData)
+        .post("http://192.168.1.118:5000/get_decrypted_data", formData)
         .then(async (res) => {
           await fetchData();
           downloadFile(res.data);
@@ -69,20 +69,44 @@ const TransactionDetails = () => {
     reader.readAsText(file);
   };
 
-  const downloadFile = (text) => {
-    const blob = new Blob([`${text}\n`],{ type: 'application/octet-stream' });
-    const url = window.URL.createObjectURL(blob);
+  // const downloadFile = (text) => {
+  //   const blob = new Blob([`${text}\n`],{ type: 'application/octet-stream' });
+  //   const url = window.URL.createObjectURL(blob);
     
-    const a = document.createElement('a');
-    console.log( text)
-    a.href = url;
-    a.download = 'decrypted_data.txt';
-    a.click();
+  //   const a = document.createElement('a');
+  //   console.log( text)
+  //   console.log(text);
+  //   console.log('Text Length:', text.length);
 
-    window.URL.revokeObjectURL(url);
+  //   a.href = url;
+  //   a.download = 'decrypted_data.txt';
+  //   a.click();
 
-  }
-
+  //   window.URL.revokeObjectURL(url);
+  // }
+  const downloadFile = (text) => {
+    if (typeof text === 'string' && text.length > 0) {
+      const binaryData = new Uint8Array(text.length);
+      for (let i = 0; i < text.length; i++) {
+        binaryData[i] = text.charCodeAt(i);
+      }
+  
+      const blob = new Blob([binaryData], { type: 'application/octet-stream' });
+  
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+  
+      a.href = url;
+      a.download = 'decrypted_data.txt';
+      a.click();
+    console.log(text);
+    console.log('Text Length:', text.length);  
+      window.URL.revokeObjectURL(url);
+    } else {
+      console.error('Invalid or empty text data.');
+    }
+  };
+  
   // const handleFileUpload = (event, index, transaction_index, encrypted_data) => {
   //   var file = event.target.files[0];
   //   var reader = new FileReader();

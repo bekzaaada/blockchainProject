@@ -7,7 +7,7 @@ const NodesDashboard = () => {
     useEffect(() => {
         const fetchNodes = async () => {
             try {
-                const response = await axios.get('http://192.168.1.111:5000/get_nodes');
+                const response = await axios.get('http://192.168.1.118:5000/get_nodes');
                 setNodes(response.data.nodes);
             } catch (error) {
                 console.error('Error fetching nodes.');

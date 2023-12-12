@@ -5,21 +5,17 @@ from cryptography.hazmat.backends import default_backend
 import os
 import base64
 
-# Load the RSA public key
 def load_rsa_public_key(pem_data):
     return serialization.load_pem_public_key(
         pem_data.encode(), backend=default_backend()
     )
-
-# Encrypt data using AES
 def aes_encrypt(data, key):
     iv = os.urandom(16)  # Initialization vector
     cipher = Cipher(algorithms.AES(key), modes.CFB(iv), backend=default_backend())
     encryptor = cipher.encryptor()
     encrypted_data = encryptor.update(data.encode()) + encryptor.finalize()
-    return iv + encrypted_data  # Prepend IV for use in decryption
+    return iv + encrypted_data 
 
-# Encrypt the AES key using RSA
 def rsa_encrypt_aes_key(aes_key, public_key):
     encrypted_key = public_key.encrypt(
         aes_key,
@@ -31,17 +27,10 @@ def rsa_encrypt_aes_key(aes_key, public_key):
     )
     return base64.b64encode(encrypted_key).decode('utf-8')
 
-# Main encryption function
 def encrypt_data(data, recipient_public_key_pem):
     recipient_public_key = load_rsa_public_key(recipient_public_key_pem)
-
-    # Generate a random AES key
-    aes_key = os.urandom(32)  # 256-bit key
-
-    # Encrypt the data with AES
+    aes_key = os.urandom(32)
     encrypted_data = aes_encrypt(data, aes_key)
-
-    # Encrypt the AES key with the recipient's RSA public key
     encrypted_aes_key = rsa_encrypt_aes_key(aes_key, recipient_public_key)
 
     return {
@@ -49,7 +38,6 @@ def encrypt_data(data, recipient_public_key_pem):
         "encrypted_aes_key": encrypted_aes_key
     }
 
-# Example usage
 recipient_public_key_pem = """-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2OBE814QEcYuYcMkrezd
 9Fo/olxD30RDLVAIERxRMrnfCMdtttYBBdx5AxqRzpC+kdg4kKCUWl6Qk81yk2Y7

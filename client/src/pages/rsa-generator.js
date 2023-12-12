@@ -10,7 +10,7 @@ const Generator = () => {
   
   function generateKey() {
     const fetchData = async () => {
-      const response = await fetch("http://192.168.1.111:5000/generate_keys");
+      const response = await fetch("http://192.168.1.118:5000/generate_keys");
       const result = await response.json();
       if (result) {
         setPrivateKey(result.private_key);

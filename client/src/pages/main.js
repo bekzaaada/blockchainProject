@@ -16,10 +16,14 @@ const Main = () => {
 
 
   const handleFileUpload = (event) => {
+    const startTime = performance.now();
     var file = event.target.files[0];
     var reader = new FileReader();
     reader.onload = function (event) {
       setFile(event.target.result);
+      const endTime = performance.now(); 
+      const elapsedTime = endTime - startTime; 
+      console.log(`Time spent on file upload: ${elapsedTime} milliseconds`);
     };
     reader.readAsText(file);
   };
@@ -45,7 +49,7 @@ const Main = () => {
     formData.append("recipient", "Beks");
     try {
       const response = await axios.post(
-        "http://192.168.1.111:5000/add_transaction",
+        "http://192.168.1.118:5000/add_transaction",
         formData
       );
       setMessage(response.data.message)
@@ -56,7 +60,7 @@ const Main = () => {
   };
   const generateBlock = async () => {
     try {
-      const response = await axios.get("http://192.168.1.111:5000/mine_block");
+      const response = await axios.get("http://192.168.1.118:5000/mine_block");
       console.log("New block generated:", response.data);
     } catch (error) {
       console.error("Error generating block:", error);
