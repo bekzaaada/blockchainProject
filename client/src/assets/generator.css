@@ -1,30 +1,58 @@
-.generator,.blockGenerator {
-    /* height: 100vh; */
+.generator {
     background-color: rgb(11, 38, 92);
     color: white;
-}
-.generator_buttons {
+    padding: 20px;
     display: flex;
-    justify-content: space-around;
-}
-.blockGenerator__container {
-    width:70%;
-    height: 50%;
-    margin: 0 auto;
-    background-color: rgba(255,255,255,0.1);
-    margin-top: 100px;
-    padding: 30px;
-}
-.blockGenerator__container div {
-    margin: 0 auto;
-}
-.blockGenerator__container_btns {
-    display : flex;
     flex-direction: column;
     align-items: center;
+    width: 80%;
+    margin: 0 auto;
+  }
+  
+  h1 {
+    color: #fff;
+  }
+  
+  .key-display {
+    display: flex;
     justify-content: space-around;
+    width: 100%;
+  }
+  
+  .key-section {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 8px;
     margin: 10px;
-}
-.blockGenerator__container_btns div{
-margin : 10px 0;
-}
+    flex: 1;
+  }
+  
+  .key-section h2 {
+    color: #ade;
+  }
+  
+  textarea {
+    width: 100%;
+    height: 150px;
+    margin-top: 10px;
+    color: black;
+    background-color: #fff;
+  }
+  
+  button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  

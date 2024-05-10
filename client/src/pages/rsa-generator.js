@@ -1,69 +1,52 @@
 import React from 'react'
 import Button from "../components/Button/Button";
 import "../assets/generator.css";
-import { Table } from "../components/Table";
-import { useState } from "react";
+import { useState, useEffect } from 'react';
 
 const Generator = () => {
   const [publicKey, setPublicKey] = useState("");
   const [privateKey, setPrivateKey] = useState("");
-  
+
   function generateKey() {
     const fetchData = async () => {
-      const response = await fetch("http://192.168.1.118:5000/generate_keys");
-      const result = await response.json();
-      if (result) {
-        setPrivateKey(result.private_key);
-        setPublicKey(result.public_key);
+      const response = await fetch("http://192.168.0.106:5000/generate_keys");
+      const data = await response.json();
+      if (data) {
+        setPrivateKey(data.private_key);
+        setPublicKey(data.public_key);
       }
     };
     fetchData();
   }
-  function downloadPrivateKey() {
-    const textToWrite = `${privateKey}\n`;
-    const blob = new Blob([textToWrite], { type: 'application/octet-stream' });
+
+  function downloadKey(keyData, fileName) {
+    const blob = new Blob([`${keyData}\n`], { type: 'application/octet-stream' });
     const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'private_key.csf';
-
-    a.click();
-
-    window.URL.revokeObjectURL(url);
-  }
-  function downloadPublicKey() {
-    const textToWrite = `${publicKey}\n`;
-    const blob = new Blob([textToWrite], { type: 'application/octet-stream' });
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'public_key.csf';
-
-    a.click();
-
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
     window.URL.revokeObjectURL(url);
   }
 
   return (
     <div className="generator">
-      <div className="generator__button">
-        <h1>RSA KEY GENERATOR</h1>
-        <Button text={"Generate"} onClick={generateKey} />
-      </div>
-      <div className="generator__table">
-        <Table
-          colNames={["PUBLIC KEY", "PRIVATE KEY"]}
-          data={[publicKey, privateKey]}
-          type="key"
-        />
-        <div className="generator_buttons">
-          <Button text={"DOWNLOAD PUBLIC KEY"} onClick={downloadPublicKey}/>
-          <Button text={"DOWNLOAD PRIVATE KEY"} onClick={downloadPrivateKey}/>
+      <h1>RSA KEY GENERATOR</h1>
+      <Button text="Generate Keys" onClick={generateKey} />
+      <div className="key-display">
+        <div className="key-section">
+          <h2>Public Key</h2>
+          <textarea readOnly value={publicKey} />
+          <Button text="Download Public Key" onClick={() => downloadKey(publicKey, 'public_key.pem')} />
+        </div>
+        <div className="key-section">
+          <h2>Private Key</h2>
+          <textarea readOnly value={privateKey} />
+          <Button text="Download Private Key" onClick={() => downloadKey(privateKey, 'private_key.pem')} />
         </div>
       </div>
     </div>
   );
 };
+
 export default Generator;

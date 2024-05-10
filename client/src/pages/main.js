@@ -49,7 +49,7 @@ const Main = () => {
     formData.append("recipient", "Beks");
     try {
       const response = await axios.post(
-        "http://192.168.1.118:5000/add_transaction",
+        "http://192.168.0.106:5000/add_transaction",
         formData
       );
       setMessage(response.data.message)
@@ -60,7 +60,7 @@ const Main = () => {
   };
   const generateBlock = async () => {
     try {
-      const response = await axios.get("http://192.168.1.118:5000/mine_block");
+      const response = await axios.get("http://192.168.0.106:5000/mine_block");
       console.log("New block generated:", response.data);
     } catch (error) {
       console.error("Error generating block:", error);

@@ -301,12 +301,11 @@ def is_valid():
     else:
         response = {'message': "We have a problem. The Blockchain is not valid."}
     return jsonify(response), 200
-##
+
 @app.route("/get_decrypted_data", methods=['POST'])
 def get_decrypted_data():
     json = request.form.to_dict(flat=True)
     transaction_keys = ['private_file', "encrypted_data", "index", "transaction_index"]
-    # print("Encrypted Data:", json["encrypted_data"])
     
     if not all(key in json for key in transaction_keys):
         return "Some elements of the transaction are missing", 400
@@ -314,7 +313,6 @@ def get_decrypted_data():
     try:
         decrypted_text_data = decrypt_text_data(json["encrypted_data"], json["private_file"])
         
-        # print("Decrypted Data:", decrypted_text_data)
         with open("decrypted_data.txt", "w", encoding='utf-8') as file:
             file.write(decrypted_text_data)
         
@@ -381,5 +379,6 @@ def get_nodes():
 
     
 
-app.run(host='192.168.1.118', port=5000, debug=True)
+app.run(host='0.0.0.0', port=5000, debug=True)
 
+# app.run(host='192.168.1.141', port=5000, debug=True)

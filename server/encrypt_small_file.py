@@ -13,13 +13,12 @@ def load_rsa_public_key(pem_data):
 
 # Encrypt data using AES
 def aes_encrypt(data, key):
-    iv = os.urandom(16)  # Initialization vector
+    iv = os.urandom(16)  
     cipher = Cipher(algorithms.AES(key), modes.CFB(iv), backend=default_backend())
     encryptor = cipher.encryptor()
     encrypted_data = encryptor.update(data.encode()) + encryptor.finalize()
-    return iv + encrypted_data  # Prepend IV for use in decryption
+    return iv + encrypted_data  
 
-# Encrypt the AES key using RSA
 def rsa_encrypt_aes_key(aes_key, public_key):
     encrypted_key = public_key.encrypt(
         aes_key,
